@@ -10,7 +10,7 @@ demonstrate how the required components can be brought together.
 
 ## Host Variables
 
-    # nautobo.yml
+    # nautobot.example.com.yml
 
     nautobot_db_username: nautobot
     nautobot_db_password: password
@@ -45,7 +45,7 @@ demonstrate how the required components can be brought together.
 
     # playbook-nautobot.yml
 
-    - hosts: nautobot
+    - hosts: nautobot.example.com
       become: yes
 
       roles:
