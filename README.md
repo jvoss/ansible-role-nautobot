@@ -42,7 +42,7 @@ None.
 ## Example Playbook
 
     - hosts: nautobot
-      var_files:
+      vars_files:
         - vars/main.yml
       roles:
         - jvoss.nautobot
