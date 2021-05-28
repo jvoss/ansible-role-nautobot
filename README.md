@@ -25,6 +25,8 @@ Minimum required variables:
     nautobot_db_username: nautobot
     nautobot_db_password: nautobot
     nautobot_secret_key: "lnvRn_5Bypl8hBV4mMwgsMuHxr6uZvGwJyDqB7fcKqo"
+
+    # Initial user to create during installation
     nautobot_superusers:
       - username: admin
         password: admin
@@ -49,9 +51,9 @@ None.
 
     nautobot_db_username: nautobot
     nautobot_db_password: securepass
-    nautobot_db_host: postgres.server.url # omit for default: localhost
-    nautobot_redis_host: redis.server.url # omit for default: localhost
+    nautobot_db_host: postgres.server.url       # omit for default: localhost
+    nautobot_redis_host: redis.server.url       # omit for default: localhost
     nautobot_superusers:     
-      - username: admin            # initial username
-        password: admin            # initial password
+      - username: admin                         # initial username
+        password: admin                         # initial password
         email: admin@example.com
