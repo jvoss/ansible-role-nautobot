@@ -62,6 +62,7 @@
     virtualenv: "{{ nautobot_root }}"
     virtualenv_command: python3 -m venv
     state: present
+  notify: restart_nautobot
   become: yes
   become_user: "{{ nautobot_system_user }}"
 
@@ -71,6 +72,7 @@
     version: "{{ nautobot_version | default('') }}"
     virtualenv: "{{ nautobot_root }}"
     virtualenv_command: python3 -m venv
+  notify: restart_nautobot
   become: yes
   become_user: "{{ nautobot_system_user }}"
 
@@ -87,6 +89,7 @@
   become_method: sudo
   become_flags: --login
   become_user: "{{ nautobot_system_user }}"
+  notify: restart_nautobot
   register: nautobot_db_migration
   changed_when: "'No migrations to apply.' not in nautobot_db_migration.stdout"
   tags:
