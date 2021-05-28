@@ -43,8 +43,28 @@
     regexp: "^napalm"
     owner: "{{ nautobot_system_user }}"
     mode: '0644'
-    create: yes
   when: nautobot_napalm.username | length > 0
+
+- name: install | add plugins to Nautobot local_requirements.txt
+  ansible.builtin.lineinfile:
+    path: "{{ nautobot_root }}/local_requirements.txt"
+    line: "{{ item }}"
+    regexp: "^{{ item }}"
+    owner: "{{ nautobot_system_user }}"
+    mode: '0644'
+  loop: "{{ nautobot_plugins | map(attribute='pip') }}"
+  notify: restart_nautobot
+  when: nautobot_plugins | length > 0
+
+- name: install | install python packages specified in local_requirements.txt
+  ansible.builtin.pip:
+    requirements: "{{ nautobot_root }}/local_requirements.txt"
+    virtualenv: "{{ nautobot_root }}"
+    virtualenv_command: python3 -m venv
+    state: present
+  notify: restart_nautobot
+  become: yes
+  become_user: "{{ nautobot_system_user }}"
 
 - name: install | install the Nautobot pip package
   ansible.builtin.pip:
@@ -124,16 +144,6 @@
   changed_when: "'0 static files copied' not in nautobot_static_directories.stdout"
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
-
-- name: install | install python packages specified in local_requirements.txt
-  ansible.builtin.pip:
-    requirements: "{{ nautobot_root }}/local_requirements.txt"
-    virtualenv: "{{ nautobot_root }}"
-    virtualenv_command: python3 -m venv
-    state: present
-  notify: restart_nautobot
-  become: yes
-  become_user: "{{ nautobot_system_user }}"
 
 - name: install | create nautobot systemd service
   ansible.builtin.template:

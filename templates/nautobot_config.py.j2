@@ -170,9 +170,13 @@ NAPALM_ARGS     = {{ nautobot_napalm.args|to_json }}
 
 PAGINATE_COUNT = {{ nautobot_paginate_count }}
 
-PLUGINS = {{ nautobot_plugins|to_json }}
+PLUGINS = {{ nautobot_plugins | map(attribute='name') | to_json }}
 
-PLUGINS_CONFIG = {{ nautobot_plugins_config|to_json }}
+{% set plugins_config = dict() %}
+{% for plugin in nautobot_plugins %}
+{% set x = plugins_config.__setitem__(plugin.name, plugin.config) %}
+{% endfor %}
+PLUGINS_CONFIG = {{ plugins_config | to_json }}
 
 PREFER_IPV4 = {{ nautobot_prefer_ipv4 }}
 

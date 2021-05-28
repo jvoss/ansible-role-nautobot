@@ -15,6 +15,16 @@
       - username: admin
         password: admin
         email: changeme@example.com
+    nautobot_plugins:
+      - name: nautobot_plugin_nornir
+        pip: nautobot-plugin-nornir
+        config:
+          nornir_settings:
+            credentials: "nautobot_plugin_nornir.plugins.credentials.env_vars.CredentialsEnvVars"
+            runner:
+              plugin: "threaded"
+              options:
+                num_workers: 20
 
   roles:
     - role: jvoss.nautobot
