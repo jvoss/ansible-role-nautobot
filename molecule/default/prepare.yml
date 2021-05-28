@@ -7,6 +7,17 @@
     nautobot_db_password: nautobot
     nautobot_db_name: nautobot
 
+  pre_tasks:
+    - name: Update yum package cache
+      ansible.builtin.yum:
+        update_cache: yes
+      when: ansible_os_family == 'RedHat'
+
+    - name: Update apt package cache
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+
   tasks:
     # RHEL8+ container images only have C.UTF-8 installed
     - name: Set database locale when using CentOS8/RHEL8+
