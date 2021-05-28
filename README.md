@@ -53,22 +53,7 @@ None.
 
 ## Example Playbook
 
-    - hosts: nautobot
-      
-      roles:
-        - jvoss.nautobot
-
-*Wherever the hosts vars are defined*:
-
-    nautobot_db_username: nautobot
-    nautobot_db_password: securepass
-    nautobot_db_host: postgres.server.url       # omit for default: localhost
-    nautobot_redis_host: redis.server.url       # omit for default: localhost
-
-    nautobot_superusers:     
-      - username: admin                         # initial username
-        password: admin                         # initial password
-        email: admin@example.com
+See [EXAMPLE](EXAMPLE.md) for a complete playbook example.
 
 ## Contributing
 
