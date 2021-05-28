@@ -20,7 +20,7 @@ on behalf of Nautobot.
 
 ## Role Variables
 
-Minimum required variables:
+Minimum required variables assuming `localhost` PostgreSQL and Redis services:
 
     nautobot_db_username: nautobot
     nautobot_db_password: nautobot
@@ -32,7 +32,7 @@ Minimum required variables:
         password: admin
         email: changeme@example.com
 
-See [defaults/main.yml](defauts/main.yml) for a complete list of defaults and 
+See [defaults/main.yml](/defauts/main.yml) for a complete list of defaults and 
 configurable options.
 
 ## Dependencies
@@ -42,12 +42,11 @@ None.
 ## Example Playbook
 
     - hosts: nautobot
-      vars_files:
-        - vars/main.yml
+      
       roles:
         - jvoss.nautobot
 
-*Inside `vars/main.yml`*:
+*Wherever the hosts vars are defined*:
 
     nautobot_db_username: nautobot
     nautobot_db_password: securepass
