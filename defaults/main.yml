@@ -204,7 +204,7 @@ nautobot_napalm:
 # Determine how many objects to display per page within a list. (Default: 50)
 nautobot_paginate_count: 50
 
-# Enable installed plugins. Add the name of each plugin to the list.
+# Enable installed plugins. See README.md for plugin configuration details.
 nautobot_plugins: []
 
 # Plugins configuration settings. These settings are used by various plugins
