@@ -1,0 +1,20 @@
+---
+- name: Converge
+  hosts: all
+
+  vars:
+    nautobot_db_username: nautobot
+    nautobot_db_password: nautobot
+    nautobot_napalm:
+      username: napalm
+      password: testing
+      timeout: 30
+      args: {}
+    nautobot_secret_key: "lnvRn_5Bypl8hBV4mMwgsMuHxr6uZvGwJyDqB7fcKqo"
+    nautobot_superusers:
+      - username: admin
+        password: admin
+        email: changeme@example.com
+
+  roles:
+    - role: jvoss.nautobot

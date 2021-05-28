@@ -1,0 +1,151 @@
+---
+- name: install | create Nautobot system user
+  ansible.builtin.user:
+    name: "{{ nautobot_system_user }}"
+    home: "{{ nautobot_root }}"
+    create_home: yes
+    shell: /bin/bash
+    comment: Nautobot
+    system: yes
+    state: present
+  become: yes
+
+- name: install | setup the Nautobot virtual environment
+  ansible.builtin.pip:
+    name:
+      - pip
+      - wheel
+    virtualenv: "{{ nautobot_root }}"
+    virtualenv_command: python3 -m venv
+    state: latest
+  become: yes
+  become_user: "{{ nautobot_system_user }}"
+
+- name: install | set the NAUTOBOT_ROOT for nautobot system user
+  ansible.builtin.lineinfile:
+    path: "~{{ nautobot_system_user }}/.bashrc"
+    line: "export NAUTOBOT_ROOT={{ nautobot_root }}"
+    regexp: "^export NAUTOBOT_ROOT="
+    owner: "{{ nautobot_system_user }}"
+
+- name: install | create Nautobot local_requirements.txt
+  ansible.builtin.copy:
+    content: ""
+    dest: "{{ nautobot_root }}/local_requirements.txt"
+    force: no
+    owner: "{{ nautobot_system_user }}"
+    mode: '0644'
+
+- name: install | add NAPALM to Nautobot local_requirements.txt
+  ansible.builtin.lineinfile:
+    path: "{{ nautobot_root }}/local_requirements.txt"
+    line: "napalm"
+    regexp: "^napalm"
+    owner: "{{ nautobot_system_user }}"
+    mode: '0644'
+    create: yes
+  when: nautobot_napalm.username | length > 0
+
+- name: install | install the Nautobot pip package
+  ansible.builtin.pip:
+    name: nautobot
+    version: "{{ nautobot_version | default('') }}"
+    virtualenv: "{{ nautobot_root }}"
+    virtualenv_command: python3 -m venv
+  become: yes
+  become_user: "{{ nautobot_system_user }}"
+
+- name: install | include Nautobot configuration tasks
+  include: configure.yml
+
+- name: install | prepare/migrate the Nautobot database
+  ansible.builtin.shell: nautobot-server migrate
+  environment:
+    NAUTOBOT_ROOT: "{{ nautobot_root }}"
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+  become_flags: --login
+  become_user: "{{ nautobot_system_user }}"
+  register: nautobot_db_migration
+  changed_when: "'No migrations to apply.' not in nautobot_db_migration.stdout"
+  tags:
+    - skip_ansible_lint # login shell is required to exec as nautobot user with profile
+
+- name: install | create initial Nautobot superusers
+  ansible.builtin.shell: nautobot-server createsuperuser --noinput
+  environment:
+    NAUTOBOT_ROOT: "{{ nautobot_root }}"
+    DJANGO_SUPERUSER_USERNAME: "{{ item.username }}"
+    DJANGO_SUPERUSER_PASSWORD: "{{ item.password }}"
+    DJANGO_SUPERUSER_EMAIL: "{{ item.email }}"
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+  become_flags: --login
+  become_user: "{{ nautobot_system_user }}"
+  register: result
+  loop: "{{ nautobot_superusers }}"
+  loop_control:
+    label: "{{ item.username }}"
+  changed_when: '"Superuser created successfully." in result.stdout'
+  failed_when: >
+    (result.stderr != '') and
+    ("CommandError: Error: That username is already taken." not in result.stderr)
+  tags:
+    - skip_ansible_lint # login shell is required to exec as nautobot user with profile
+
+- name: install | create Nautobot static directories
+  ansible.builtin.shell: nautobot-server collectstatic --noinput
+  environment:
+    NAUTOBOT_ROOT: "{{ nautobot_root }}"
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+  become_flags: --login
+  become_user: "{{ nautobot_system_user }}"
+  register: nautobot_static_directories
+  changed_when: "'0 static files copied' not in nautobot_static_directories.stdout"
+  tags:
+    - skip_ansible_lint # login shell is required to exec as nautobot user with profile
+
+- name: install | install python packages specified in local_requirements.txt"
+  ansible.builtin.pip:
+    requirements: "{{ nautobot_root }}/local_requirements.txt"
+    virtualenv: "{{ nautobot_root }}"
+    virtualenv_command: python3 -m venv
+    state: present
+  become: yes
+  become_user: "{{ nautobot_system_user }}"
+
+- name: install | create nautobot systemd service
+  ansible.builtin.template:
+    src: nautobot.service.j2
+    dest: /etc/systemd/system/nautobot.service
+    owner: root
+    group: root
+    mode: '0755'
+  become: yes
+
+- name: install | create nautobot systemd worker service
+  ansible.builtin.template:
+    src: nautobot-worker.service.j2
+    dest: /etc/systemd/system/nautobot-worker.service
+    owner: root
+    group: root
+    mode: '0755'
+  become: yes
+
+- name: install | start and enable nautobot services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  become: yes
+  loop:
+    - nautobot
+    - nautobot-worker

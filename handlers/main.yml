@@ -1,0 +1,26 @@
+---
+- name: handlers | check Nautobot configuration
+  ansible.builtin.shell: nautobot-server check
+  environment:
+    NAUTOBOT_ROOT: "{{ nautobot_root }}"
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+  become_flags: --login
+  become_user: "{{ nautobot_system_user }}"
+  listen: restart_nautobot
+  register: config_check
+  failed_when: "config_check.stdout != 'System check identified no issues (0 silenced).'"
+  tags:
+    - skip_ansible_lint # login shell is required to exec as nautobot user with profile
+
+- name: handler | restart Nautobot services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  become: yes
+  listen: restart_nautobot
+  loop:
+    - nautobot
+    - nautobot-worker

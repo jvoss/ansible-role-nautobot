@@ -1,0 +1,207 @@
+# {{ ansible_managed }}
+
+import os
+import sys
+
+from nautobot.core.settings import *  # noqa F401,F403
+from nautobot.core.settings_funcs import is_truthy
+
+#########################
+#                       #
+#   Required settings   #
+#                       #
+#########################
+
+ALLOWED_HOSTS = {{ nautobot_allowed_hosts|to_json }}
+
+DATABASES = {
+    "default": {
+      'NAME': '{{ nautobot_db_name }}',        
+      'USER': '{{ nautobot_db_username }}',     
+      'PASSWORD': '{{ nautobot_db_password }}', 
+      'HOST': '{{ nautobot_db_host }}',         
+      'PORT': '{{ nautobot_db_port }}',         
+      'CONN_MAX_AGE': {{ nautobot_db_conn_age }},
+      "ENGINE": "django.db.backends.postgresql",
+    }
+}
+
+RQ_QUEUES = {
+    "default": {
+        "USE_REDIS_CACHE": "default",
+    },
+    "check_releases": {
+        "USE_REDIS_CACHE": "default",
+    },
+    "custom_fields": {
+        "USE_REDIS_CACHE": "default",
+    },
+    "webhooks": {
+        "USE_REDIS_CACHE": "default",
+    },
+}
+
+# Nautobot uses Cacheops for database query caching. These are the following defaults.
+# For detailed configuration see: https://github.com/Suor/django-cacheops#setup
+# Set Cache Ops variables
+
+{% if nautobot_redis_ssl %}
+redis_protocol = "rediss"
+{% else %}
+redis_protocol = "redis"
+{% endif %}
+
+cache_ops_pwd = '{{ nautobot_redis_password }}'
+cache_ops_host = '{{ nautobot_redis_host }}'
+cache_ops_user = '{{ nautobot_redis_user }}'
+cache_ops_port = {{ nautobot_redis_port }}
+
+CACHEOPS_REDIS = os.getenv("NAUTOBOT_CACHEOPS_REDIS", f"{redis_protocol}://:{cache_ops_pwd}@{cache_ops_host}:{cache_ops_port}/1")
+
+# The django-redis cache is used to establish concurrent locks using Redis. The
+# django-rq settings will use the same instance/database by default.
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"{redis_protocol}://:{cache_ops_pwd}@{cache_ops_host}:{cache_ops_port}/0",
+        "TIMEOUT": 300,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "",
+        },
+    }
+}
+
+SECRET_KEY = '{{ nautobot_secret_key }}'
+
+#########################
+#                       #
+#   Optional settings   #
+#                       #
+#########################
+
+{% if nautobot_admins|length > 0 %}
+ADMINS = {{ nautobot_admins|to_json }}
+{% else %}
+ADMINS = []
+{% endif %}
+
+ALLOWED_URL_SCHEMES = (
+    '{{ nautobot_allowed_url_schemes | join("', '") }}',
+)
+
+BANNER_TOP = '{{ nautobot_banner.top }}'
+BANNER_BOTTOM = '{{ nautobot_banner.bottom }}'
+BANNER_LOGIN = '{{ nautobot_banner_login }}'
+
+CACHEOPS_DEFAULTS = {"timeout": {{ nautobot_cacheops_timeout }} }
+CACHEOPS_ENABLED = {{ nautobot_cacheops_enabled }}
+
+CHANGELOG_RETENTION = {{ nautobot_changelog_retention }}
+
+CORS_ALLOW_ALL_ORIGINS = {{ nautobot_cors_allow_all_origins }}
+
+{% if nautobot_cors_allowed_origins|length > 0 %}
+CORS_ALLOWED_ORIGINS = {{ nautobot_cors_allowed_origins|to_json }}
+{% else %}
+CORS_ALLOWED_ORIGINS = []
+{% endif %}
+
+{% if nautobot_cors_allowed_origin_regexes|length > 0 %}
+CORS_ALLOWED_ORIGIN_REGEXES = {{ nautobot_cors_allowed_origin_regexes|to_json }}
+{% else %}
+CORS_ALLOWED_ORIGIN_REGEXES = []
+{% endif %}
+
+CSRF_TRUSTED_ORIGINS = {{ nautobot_csrf_trusted_origins|to_json }}
+
+DEBUG = {{ nautobot_debug }}
+
+ENFORCE_GLOBAL_UNIQUE = {{ nautobot_enforce_global_unique }}
+
+{% if nautobot_exempt_view_permissions|length > 0 %}
+EXEMPT_VIEW_PERMISSIONS = {{ nautobot_exempt_view_permissions|to_json }}
+{% else %}
+EXEMPT_VIEW_PERMISSIONS = []
+{% endif %}
+
+# Global 3rd-party authentication settings
+EXTERNAL_AUTH_DEFAULT_GROUPS = []
+EXTERNAL_AUTH_DEFAULT_PERMISSIONS = {}
+
+{% if nautobot_force_script_name == 'None' %}
+FORCE_SCRIPT_NAME = None
+{% else %}
+FORCE_SCRIPT_NAME = "{{ nautobot_force_script_name }}"
+{% endif %}
+
+HIDE_RESTRICTED_UI = {{ nautobot_hide_restricted_ui }}
+
+{% if nautobot_http_proxies|length > 0 %}
+HTTP_PROXIES = {{ nautobot_http_proxies|to_json }}
+{% endif %}
+
+INTERNAL_IPS = ('{{nautobot_internal_ips|join("', '")}}')
+
+# Enable custom logging. Please see the Django documentation for detailed guidance on configuring custom logs:
+#   https://docs.djangoproject.com/en/stable/topics/logging/
+LOGGING = {}
+
+# Setting this to True will display a "maintenance mode" banner at the top of every page.
+MAINTENANCE_MODE = {{ nautobot_maintenance_mode }}
+
+MAX_PAGE_SIZE = {{ nautobot_max_page_size }}
+
+{% if nautobot_media_root is defined %}
+MEDIA_ROOT = '{{ nautobot_media_root }}'
+{% endif %}
+
+{% if nautobot_storage is defined %}
+STORAGE_BACKEND = '{{ nautobot_storage.backend }}'
+STORAGE_CONFIG = {{ nautobot_storage.config|to_json }}
+{% endif %}
+
+METRICS_ENABLED = {{ nautobot_metrics_enabled }}
+
+NAPALM_USERNAME = '{{ nautobot_napalm.username }}'
+NAPALM_PASSWORD = '{{ nautobot_napalm.password }}'
+NAPALM_TIMEOUT  = {{ nautobot_napalm.timeout }}
+NAPALM_ARGS     = {{ nautobot_napalm.args|to_json }}
+
+PAGINATE_COUNT = {{ nautobot_paginate_count }}
+
+PLUGINS = {{ nautobot_plugins|to_json }}
+
+PLUGINS_CONFIG = {{ nautobot_plugins_config|to_json }}
+
+PREFER_IPV4 = {{ nautobot_prefer_ipv4 }}
+
+RACK_ELEVATION_DEFAULT_UNIT_HEIGHT = {{ nautobot_rack_elevation_default_unit_height }}
+RACK_ELEVATION_DEFAULT_UNIT_WIDTH = {{ nautobot_rack_elevation_default_unit_width }}
+
+REMOTE_AUTH_AUTO_CREATE_USER = {{ nautobot_remote_auth.auto_create_user}}
+REMOTE_AUTH_HEADER = '{{ nautobot_remote_auth.header }}'
+
+RELEASE_CHECK_TIMEOUT = {{ nautobot_release_check.timeout }}
+RELEASE_CHECK_URL = {{ nautobot_release_check.url }}
+
+SESSION_COOKIE_AGE = {{ nautobot_session_cookie_age }}
+
+{% if nautobot_session_file_path == 'None' %}
+SESSION_FILE_PATH = None
+{% else %}
+SESSION_FILE_PATH = "{{ nautobot_session_file_path }}"
+{% endif %}
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = {{ nautobot_social_auth_postgres_jsonfield }}
+
+TIME_ZONE = "{{ nautobot_time_zone }}"
+
+DATE_FORMAT = '{{ nautobot_time_format.date }}'
+SHORT_DATE_FORMAT = '{{ nautobot_time_format.short_date }}'
+TIME_FORMAT = '{{ nautobot_time_format.time }}'
+SHORT_TIME_FORMAT = '{{ nautobot_time_format.short_time }}'
+DATETIME_FORMAT = '{{ nautobot_time_format.datetime }}'
+SHORT_DATETIME_FORMAT = '{{ nautobot_time_format.short_datetime }}'
+
+EXTRA_INSTALLED_APPS = {{ nautobot_extra_installed_apps|to_json }}

@@ -1,0 +1,27 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Nautobot WSGI Service
+Documentation=https://nautobot.readthedocs.io/en/stable/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment="NAUTOBOT_ROOT={{ nautobot_root }}"
+
+User={{ nautobot_system_user }}
+Group={{ nautobot_system_user }}
+PIDFile=/var/tmp/nautobot.pid
+WorkingDirectory={{ nautobot_root }}
+
+ExecStart={{ nautobot_root }}/bin/nautobot-server start --pidfile /var/tmp/nautobot.pid --ini {{ nautobot_root }}/uwsgi.ini
+ExecStop={{ nautobot_root }}/bin/nautobot-server start --stop /var/tmp/nautobot.pid
+ExecReload={{ nautobot_root }}/bin/nautobot-server start --reload /var/tmp/nautobot.pid
+
+Restart=on-failure
+RestartSec=30
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

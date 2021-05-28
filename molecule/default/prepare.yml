@@ -1,0 +1,47 @@
+---
+- name: Prepare
+  hosts: all
+
+  vars:
+    nautobot_db_username: nautobot
+    nautobot_db_password: nautobot
+    nautobot_db_name: nautobot
+
+  tasks:
+    # RHEL8+ container images only have C.UTF-8 installed
+    - name: Set database locale when using CentOS8/RHEL8+
+      set_fact:
+        db_locale: C.UTF-8
+      when:
+        - ansible_os_family == 'RedHat'
+        - ansible_distribution_major_version == '8'
+        - lookup('env', 'CI') != 'true'
+
+    - name: Install PostgreSQL
+      include_role:
+        name: geerlingguy.postgresql
+        apply:
+          become: yes
+      vars:
+        postgresql_users:
+          - name: "{{ nautobot_db_username }}"
+            password: "{{ nautobot_db_password }}"
+            db: "{{ nautobot_db_name }}"
+        postgresql_databases:
+          - name: "{{ nautobot_db_name }}"
+            owner: "{{ nautobot_db_username }}"
+            lc_collate: "{{ db_locale }}"
+            lc_ctype: "{{ db_locale }}"
+      when: lookup('env', 'CI') != 'true'
+
+    - name: Install Redis
+      ansible.builtin.yum:
+        name: redis
+        state: present
+      when: lookup('env', 'CI') != 'true'
+
+    - name: Start Redis
+      ansible.builtin.systemd:
+        name: redis
+        state: started
+      when: lookup('env', 'CI') != 'true'

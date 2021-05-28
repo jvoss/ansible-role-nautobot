@@ -1,0 +1,16 @@
+---
+- name: install.debian | update apt repository cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install.debian | install required system packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - git
+    - python3
+    - python3-pip
+    - python3-venv
+    - python3-dev

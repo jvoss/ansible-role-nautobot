@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Nautobot Request Queue Worker
+Documentation=https://nautobot.readthedocs.io/en/stable/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment="NAUTOBOT_ROOT={{ nautobot_root }}"
+
+User={{ nautobot_system_user }}
+Group={{ nautobot_system_user }}
+WorkingDirectory={{ nautobot_root }}
+
+ExecStart={{ nautobot_root }}/bin/nautobot-server rqworker
+
+Restart=on-failure
+RestartSec=30
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

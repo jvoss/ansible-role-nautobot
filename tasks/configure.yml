@@ -1,0 +1,20 @@
+---
+- name: configure | configure nautobot_config.py
+  ansible.builtin.template:
+    src: nautobot_config.py.j2
+    dest: "{{ nautobot_root }}/nautobot_config.py"
+    owner: "{{ nautobot_system_user }}"
+    mode: '0664'
+  become: yes
+  become_user: "{{ nautobot_system_user }}"
+  notify: restart_nautobot
+
+- name: configure | configure uswgi.ini
+  ansible.builtin.template:
+    src: uwsgi.ini.j2
+    dest: "{{ nautobot_root }}/uwsgi.ini"
+    owner: "{{ nautobot_system_user }}"
+    mode: '0664'
+  become: yes
+  become_user: "{{ nautobot_system_user }}"
+  notify: restart_nautobot

@@ -1,0 +1,9 @@
+---
+- name: Include system package requirements
+  include_tasks: "install.{{ ansible_os_family | lower }}.yml"
+  args:
+    apply:
+      become: yes
+
+- name: Include Nautobot installation tasks
+  include_tasks: install.yml
