@@ -47,9 +47,26 @@ attempt to create the defined users only once during initial installation. If
 creation process [documented](https://nautobot.readthedocs.io/en/latest/installation/nautobot/#create-a-superuser)
 by Nautobot can be used instead.
 
+## Plugins 
+
+Nautobot plugins that are pip modules can be installed and configured by setting
+the `nautobot_plugins` variable. Below is an example for the Nautobot
+Nornir plugin:
+
+      nautobot_plugins:
+        - name: nautobot_plugin_nornir    # Plugin name
+          pip: nautobot-plugin-nornir     # Pip module name
+          config:                         # plugin configuration
+            nornir_settings:
+              credentials: "nautobot_plugin_nornir.plugins.credentials.env_vars.CredentialsEnvVars"
+              runner:
+                plugin: "threaded"
+                options:
+                  num_workers: 20
+
 ## Dependencies
 
-None.
+No Ansible dependencies. The application requires Redis and Postgres.
 
 ## Example Playbook
 
@@ -57,4 +74,5 @@ See [EXAMPLE](EXAMPLE.md) for a complete playbook example.
 
 ## Contributing
 
-Contributions are encouraged. Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Contributions are encouraged. Please see [CONTRIBUTING](CONTRIBUTING.md) for
+details.
