@@ -24,6 +24,8 @@ on behalf of Nautobot.
 Minimum required variables assuming `localhost` PostgreSQL and Redis services
 are available:
 
+    nautobot_version: 1.0.1   # (Optional) Lock to specific Nautobot version
+
     nautobot_db_username: nautobot
     nautobot_db_password: nautobot
     nautobot_secret_key: "lnvRn_5Bypl8hBV4mMwgsMuHxr6uZvGwJyDqB7fcKqo"
