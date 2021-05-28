@@ -32,7 +32,7 @@ Minimum required variables assuming `localhost` PostgreSQL and Redis services:
         password: admin
         email: changeme@example.com
 
-See [defaults/main.yml](/defauts/main.yml) for a complete list of defaults and 
+See [defaults/main.yml](defaults/main.yml) for a complete list of defaults and 
 configurable options.
 
 ## Dependencies
