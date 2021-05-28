@@ -47,6 +47,19 @@ attempt to create the defined users only once during initial installation. If
 creation process [documented](https://nautobot.readthedocs.io/en/latest/installation/nautobot/#create-a-superuser)
 by Nautobot can be used instead.
 
+## Version locking
+
+Optionally, a specific version of nautobot can be configured using the variable:
+
+    nautobot_version: 1.0.1
+
+This will ensure that a specific target is maintained. If not set, on initial
+install pip will install the latest version. On subsequent runs it will only check that
+the module is installed but will not upgrade it automatically.
+
+In either case, an upgrade can be triggered by setting this variable to the desired
+Nautobot release version. Downgrading is not supported.
+
 ## Dependencies
 
 None.
