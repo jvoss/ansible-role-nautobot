@@ -78,6 +78,8 @@
 - name: install | check if initial installation of Nautobot
   ansible.builtin.service_facts:
   register: services_state
+  when:
+    - nautobot_superusers is defined
 
 - name: install | create initial Nautobot superusers
   ansible.builtin.shell: nautobot-server createsuperuser --noinput
@@ -102,7 +104,7 @@
     ("CommandError: Error: That username is already taken." not in result.stderr)
   when:
     - nautobot_superusers is defined
-    - services_state.ansible_facts.services['nautobot.service'] is not defined"
+    - services_state.ansible_facts.services['nautobot.service'] is not defined
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
@@ -121,7 +123,7 @@
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
-- name: install | install python packages specified in local_requirements.txt"
+- name: install | install python packages specified in local_requirements.txt
   ansible.builtin.pip:
     requirements: "{{ nautobot_root }}/local_requirements.txt"
     virtualenv: "{{ nautobot_root }}"
