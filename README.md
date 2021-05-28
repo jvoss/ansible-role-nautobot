@@ -69,3 +69,7 @@ None.
       - username: admin                         # initial username
         password: admin                         # initial password
         email: admin@example.com
+
+## Contributing
+
+Contributions are encouraged. Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
