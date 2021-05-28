@@ -73,6 +73,12 @@
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
+# This step is used to determine whether the run is the first installation of
+# Nautobot to determine whether initial users should be created (if defined)
+- name: install | check if initial installation of Nautobot
+  ansible.builtin.service_facts:
+  register: services_state
+
 - name: install | create initial Nautobot superusers
   ansible.builtin.shell: nautobot-server createsuperuser --noinput
   environment:
@@ -94,6 +100,9 @@
   failed_when: >
     (result.stderr != '') and
     ("CommandError: Error: That username is already taken." not in result.stderr)
+  when:
+    - nautobot_superusers is defined
+    - services_state.ansible_facts.services['nautobot.service'] is not defined"
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
