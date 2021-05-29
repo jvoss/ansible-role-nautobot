@@ -4,7 +4,7 @@ The following provides a simple example of a complete Nautobot configuration usi
 Ansible. It is *not suitable for production* and is intended to only demonstrate how
 the required components can be brought together.
 
-At the complete of this play Nautobot will be available at: `http://<host_ip>:8080`
+At the completion of this play Nautobot will be available at: `http://<host_ip>:8080`
 
 ## Install Roles
 
