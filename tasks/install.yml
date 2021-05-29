@@ -21,6 +21,17 @@
   become: yes
   become_user: "{{ nautobot_system_user }}"
 
+- name: install | install the Nautobot pip package
+  ansible.builtin.pip:
+    name: nautobot
+    version: "{{ nautobot_version | default('') }}"
+    virtualenv: "{{ nautobot_root }}"
+    virtualenv_command: python3 -m venv
+  become: yes
+  become_user: "{{ nautobot_system_user }}"
+  register: nautobot_pip
+  notify: restart_nautobot
+
 - name: install | set the NAUTOBOT_ROOT for nautobot system user
   ansible.builtin.lineinfile:
     path: "~{{ nautobot_system_user }}/.bashrc"
@@ -65,17 +76,6 @@
   notify: restart_nautobot
   become: yes
   become_user: "{{ nautobot_system_user }}"
-
-- name: install | install the Nautobot pip package
-  ansible.builtin.pip:
-    name: nautobot
-    version: "{{ nautobot_version | default('') }}"
-    virtualenv: "{{ nautobot_root }}"
-    virtualenv_command: python3 -m venv
-  become: yes
-  become_user: "{{ nautobot_system_user }}"
-  register: nautobot_pip
-  notify: restart_nautobot
 
 - name: install | include Nautobot configuration tasks
   include: configure.yml
