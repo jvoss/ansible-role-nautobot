@@ -19,10 +19,10 @@ Tested on Nautobot supported platforms:
 * CentOS 8.2+ or Red Hat Enterprise Linux (RHEL) 8.2+
 * Ubuntu 20.04
 
-This role will require root access to manage system dependencies and actions
+This role will require root access (via sudo) to manage system dependencies and actions
 on behalf of Nautobot.
 
-## Role Variables
+## Role variables
 
 Minimum required variables assuming `localhost` PostgreSQL and Redis services
 are available:
