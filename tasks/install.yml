@@ -10,6 +10,14 @@
     state: present
   become: yes
 
+- name: install | ensure Nautobot directory permissions
+  ansible.builtin.file:
+    path: "{{ nautobot_root }}"
+    owner: "{{ nautobot_system_user }}"
+    state: directory
+    mode: '0755'
+  become: yes
+
 - name: install | setup the Nautobot virtual environment
   ansible.builtin.pip:
     name:
