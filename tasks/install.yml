@@ -72,14 +72,24 @@
     version: "{{ nautobot_version | default('') }}"
     virtualenv: "{{ nautobot_root }}"
     virtualenv_command: python3 -m venv
-  notify: restart_nautobot
   become: yes
   become_user: "{{ nautobot_system_user }}"
+  register: nautobot_pip
+  notify: restart_nautobot
 
 - name: install | include Nautobot configuration tasks
   include: configure.yml
 
-- name: install | prepare/migrate the Nautobot database
+# This step is used to determine whether the run is the first installation of
+# Nautobot to determine whether initial users should be created (if defined)
+# and whether post upgrade tasks should run
+- name: install | check if initial installation of Nautobot
+  ansible.builtin.service_facts:
+  register: services_state
+  when:
+    - nautobot_superusers is defined
+
+- name: install | initialize the Nautobot database
   ansible.builtin.shell: nautobot-server migrate
   environment:
     NAUTOBOT_ROOT: "{{ nautobot_root }}"
@@ -92,16 +102,30 @@
   notify: restart_nautobot
   register: nautobot_db_migration
   changed_when: "'No migrations to apply.' not in nautobot_db_migration.stdout"
+  when:
+    - services_state.ansible_facts.services['nautobot.service'] is not defined
+    - nautobot_pip.changed
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
-# This step is used to determine whether the run is the first installation of
-# Nautobot to determine whether initial users should be created (if defined)
-- name: install | check if initial installation of Nautobot
-  ansible.builtin.service_facts:
-  register: services_state
+- name: install | perform post_upgrade operations
+  ansible.builtin.shell: nautobot-server post_upgrade
+  environment:
+    NAUTOBOT_ROOT: "{{ nautobot_root }}"
+  args:
+    executable: /bin/bash
+  become: yes
+  become_method: sudo
+  become_flags: --login
+  become_user: "{{ nautobot_system_user }}"
+  notify: restart_nautobot
+  register: nautobot_db_migration
+  changed_when: "'No migrations to apply.' not in nautobot_db_migration.stdout"
   when:
-    - nautobot_superusers is defined
+    - services_state.ansible_facts.services['nautobot.service'] is defined
+    - nautobot_pip.changed
+  tags:
+    - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
 - name: install | create initial Nautobot superusers
   ansible.builtin.shell: nautobot-server createsuperuser --noinput
@@ -142,6 +166,9 @@
   become_user: "{{ nautobot_system_user }}"
   register: nautobot_static_directories
   changed_when: "'0 static files copied' not in nautobot_static_directories.stdout"
+  when:
+    - services_state.ansible_facts.services['nautobot.service'] is not defined
+    - nautobot_pip.changed
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
