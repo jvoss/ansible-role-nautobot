@@ -1,6 +1,9 @@
 # Ansible Role: Nautobot
 
 [![CI](https://github.com/jvoss/ansible-role-nautobot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jvoss/ansible-role-nautobot/actions/workflows/ci.yml)
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-jvoss.nautobot-blue.svg)](https://galaxy.ansible.com/jvoss/nautobot)
+[![Ansible Quality Score](https://img.shields.io/ansible/quality/55095?color=blue)](https://galaxy.ansible.com/jvoss/nautobot)
+[![Version](https://img.shields.io/github/release/jvoss/ansible-role-nautobot.svg)](https://github.com/jvoss/ansible-role-nautobot/releases/)
 
 Installs and configures [Nautobot](https://github.com/nautobot/nautobot) on
 RHEL/CentOS or Ubuntu servers.
