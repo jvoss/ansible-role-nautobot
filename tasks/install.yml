@@ -86,8 +86,6 @@
 - name: install | check if initial installation of Nautobot
   ansible.builtin.service_facts:
   register: services_state
-  when:
-    - nautobot_superusers is defined
 
 - name: install | initialize the Nautobot database
   ansible.builtin.shell: nautobot-server migrate
