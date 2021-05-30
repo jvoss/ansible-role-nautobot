@@ -141,7 +141,8 @@ EXEMPT_VIEW_PERMISSIONS = []
 
 # Global 3rd-party authentication settings
 EXTERNAL_AUTH_DEFAULT_GROUPS = []
-EXTERNAL_AUTH_DEFAULT_PERMISSIONS = {}
+EXTERNAL_AUTH_DEFAULT_GROUPS = {{ nautobot_external_auth_default_groups|to_json }}
+EXTERNAL_AUTH_DEFAULT_PERMISSIONS = {{ nautobot_external_auth_default_permissions|to_json }}
 
 {% if nautobot_force_script_name == 'None' %}
 FORCE_SCRIPT_NAME = None

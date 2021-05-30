@@ -136,6 +136,16 @@ nautobot_enforce_global_unique: False
 # `<app>.<model>`. Add '*' to this list to exempt all models.
 nautobot_exempt_view_permissions: []
 
+# The list of group names to assign a new user account when created using 3rd-party
+# authentication.
+nautobot_external_auth_default_groups: []
+
+# A mapping of permissions to assign a new user account when created using SSO
+# authentication. Each key in the dictionary will be the permmission name specified
+# as `<app_label>.<action>_<model>`, and the value should be set to the permission
+# contraints, or `None` to allow all objects.
+nautobot_external_auth_default_permissions: {}
+
 # If hosting Nautobot in a subdirectory, you must set this value to match the base URL
 # prefix configured in your HTTP server (e.g. `/nautobot/`). When not set, URLs will
 # default to being prefixed by `/`.
