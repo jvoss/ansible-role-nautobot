@@ -50,6 +50,7 @@ attempt to create the defined users only once during initial installation. If
 creation process [documented](https://nautobot.readthedocs.io/en/latest/installation/nautobot/#create-a-superuser)
 by Nautobot can be used instead.
 
+### External Authentication
 See the [wiki](https://github.com/jvoss/ansible-role-nautobot/wiki) for
 information about available external authentication methods.
 
