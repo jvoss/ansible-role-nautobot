@@ -75,6 +75,16 @@
   notify: restart_nautobot
   when: nautobot_plugins | length > 0
 
+- name: install | add django-auth-ldap to local_requirements.txt
+  ansible.builtin.lineinfile:
+    path: "{{ nautobot_root }}/local_requirements.txt"
+    line: "django-auth-ldap"
+    regexp: "^django-auth-ldap"
+    owner: "{{ nautobot_system_user }}"
+    mode: '0644'
+  notify: restart_nautobot
+  when: nautobot_auth_ldap is defined
+
 - name: install | install python packages specified in local_requirements.txt
   ansible.builtin.pip:
     requirements: "{{ nautobot_root }}/local_requirements.txt"
