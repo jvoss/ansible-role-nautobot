@@ -1,4 +1,16 @@
 ---
+- name: configure | include LDAP in AUTHENTICATION_BACKENDS
+  ansible.builtin.set_fact:
+    nautobot_authentication_backends: |
+      {{ ['django_auth_ldap.backend.LDAPBackend'] + nautobot_authentication_backends }}
+  when: nautobot_auth_ldap is defined
+
+- name: configure | include RemoteUserBackend in AUTHENTICATION_BACKENDS
+  ansible.builtin.set_fact:
+    nautobot_authentication_backends: |
+      {{ ['nautobot.core.authentication.RemoteUserBackend'] + nautobot_authentication_backends }}
+  when: nautobot_remote_auth is defined
+
 - name: configure | configure nautobot_config.py
   ansible.builtin.template:
     src: nautobot_config.py.j2
