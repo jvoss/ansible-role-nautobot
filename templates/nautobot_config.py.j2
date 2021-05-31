@@ -1,7 +1,13 @@
 # {{ ansible_managed }}
 
+import json
 import os
 import sys
+
+{% if nautobot_auth_ldap is defined %}
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+{% endif %}
 
 from nautobot.core.settings import *  # noqa F401,F403
 from nautobot.core.settings_funcs import is_truthy
@@ -90,6 +96,15 @@ ALLOWED_URL_SCHEMES = (
     '{{ nautobot_allowed_url_schemes | join("', '") }}',
 )
 
+{% if nautobot_auth_ldap is defined %}
+AUTHENTICATION_BACKENDS = [
+    'django_auth_ldap.backend.LDAPBackend',
+    'nautobot.core.authentication.ObjectPermissionBackend',
+]
+
+{{ nautobot_auth_ldap.config | default() }}
+{% endif %}
+
 BANNER_TOP = '{{ nautobot_banner.top }}'
 BANNER_BOTTOM = '{{ nautobot_banner.bottom }}'
 BANNER_LOGIN = '{{ nautobot_banner_login }}'
@@ -126,8 +141,8 @@ EXEMPT_VIEW_PERMISSIONS = []
 {% endif %}
 
 # Global 3rd-party authentication settings
-EXTERNAL_AUTH_DEFAULT_GROUPS = []
-EXTERNAL_AUTH_DEFAULT_PERMISSIONS = {}
+EXTERNAL_AUTH_DEFAULT_GROUPS = {{ nautobot_external_auth_default_groups|to_json }}
+EXTERNAL_AUTH_DEFAULT_PERMISSIONS = json.loads(r'''{{ nautobot_external_auth_default_permissions|to_json }}''')
 
 {% if nautobot_force_script_name == 'None' %}
 FORCE_SCRIPT_NAME = None
