@@ -72,6 +72,10 @@ nautobot_allowed_url_schemes:
   - vnc
   - xmpp
 
+# Authentication backends
+nautobot_authentication_backends:
+  - nautobot.core.authentication.ObjectPermissionBackend
+
 # Optionally display a persistent banner at the top and/or bottom of every page.
 # HTML is allowed. To display the same content in both banners, define
 # BANNER_TOP and set BANNER_BOTTOM = BANNER_TOP.
@@ -227,9 +231,9 @@ nautobot_rack_elevation_default_unit_height: 22
 nautobot_rack_elevation_default_unit_width: 220
 
 # Remote authentication backend support
-nautobot_remote_auth:
-  header: HTTP_REMOTE_USER
-  auto_create_user: False
+# nautobot_remote_auth:
+#  header: HTTP_REMOTE_USER
+#  auto_create_user: False
 
 # This determines how often the GitHub API is called to check the latest release
 # of Nautobot. Timeout must be at least 1 hour.
