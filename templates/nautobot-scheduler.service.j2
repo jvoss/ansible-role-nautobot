@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 [Unit]
-Description=Nautobot Celery Worker
+Description=Nautobot Celery Beat Scheduler
 Documentation=https://nautobot.readthedocs.io/en/stable/
 After=network-online.target
 Wants=network-online.target
@@ -12,9 +12,10 @@ Environment="NAUTOBOT_ROOT={{ nautobot_root }}"
 
 User={{ nautobot_system_user }}
 Group={{ nautobot_system_user }}
+PIDFile=/var/tmp/nautobot-scheduler.pid
 WorkingDirectory={{ nautobot_root }}
 
-ExecStart={{ nautobot_root }}/bin/nautobot-server celery worker --loglevel INFO --pidfile /var/tmp/nautobot-worker.pid
+ExecStart={{ nautobot_root }}/bin/nautobot-server celery beat --loglevel INFO --pidfile /var/tmp/nautobot-scheduler.pid
 
 Restart=on-failure
 RestartSec=30
