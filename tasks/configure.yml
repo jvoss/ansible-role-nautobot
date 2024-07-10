@@ -17,7 +17,7 @@
     dest: "{{ nautobot_root }}/nautobot_config.py"
     owner: "{{ nautobot_system_user }}"
     mode: '0664'
-  become: yes
+  become: true
   become_user: "{{ nautobot_system_user }}"
   notify: restart_nautobot
 
@@ -27,6 +27,6 @@
     dest: "{{ nautobot_root }}/uwsgi.ini"
     owner: "{{ nautobot_system_user }}"
     mode: '0664'
-  become: yes
+  become: true
   become_user: "{{ nautobot_system_user }}"
   notify: restart_nautobot

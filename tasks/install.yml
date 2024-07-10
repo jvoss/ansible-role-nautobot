@@ -8,7 +8,7 @@
     comment: Nautobot
     system: yes
     state: present
-  become: yes
+  become: true
 
 - name: install | ensure Nautobot directory permissions
   ansible.builtin.file:
@@ -16,7 +16,7 @@
     owner: "{{ nautobot_system_user }}"
     state: directory
     mode: '0755'
-  become: yes
+  become: true
 
 - name: install | setup the Nautobot virtual environment
   ansible.builtin.pip:
@@ -26,7 +26,7 @@
     virtualenv: "{{ nautobot_root }}"
     virtualenv_command: python3 -m venv
     state: latest
-  become: yes
+  become: true
   become_user: "{{ nautobot_system_user }}"
 
 - name: install | install the Nautobot pip package
@@ -35,7 +35,7 @@
     version: "{{ nautobot_version | default('') }}"
     virtualenv: "{{ nautobot_root }}"
     virtualenv_command: python3 -m venv
-  become: yes
+  become: true
   become_user: "{{ nautobot_system_user }}"
   register: nautobot_pip
   notify: restart_nautobot
@@ -92,7 +92,7 @@
     virtualenv_command: python3 -m venv
     state: present
   notify: restart_nautobot
-  become: yes
+  become: true
   become_user: "{{ nautobot_system_user }}"
 
 - name: install | include Nautobot configuration tasks
@@ -111,7 +111,7 @@
     NAUTOBOT_ROOT: "{{ nautobot_root }}"
   args:
     executable: /bin/bash
-  become: yes
+  become: true
   become_method: sudo
   become_flags: --login
   become_user: "{{ nautobot_system_user }}"
@@ -130,7 +130,7 @@
     NAUTOBOT_ROOT: "{{ nautobot_root }}"
   args:
     executable: /bin/bash
-  become: yes
+  become: true
   become_method: sudo
   become_flags: --login
   become_user: "{{ nautobot_system_user }}"
@@ -152,7 +152,7 @@
     DJANGO_SUPERUSER_EMAIL: "{{ item.email }}"
   args:
     executable: /bin/bash
-  become: yes
+  become: true
   become_method: sudo
   become_flags: --login
   become_user: "{{ nautobot_system_user }}"
@@ -176,7 +176,7 @@
     NAUTOBOT_ROOT: "{{ nautobot_root }}"
   args:
     executable: /bin/bash
-  become: yes
+  become: true
   become_method: sudo
   become_flags: --login
   become_user: "{{ nautobot_system_user }}"
@@ -195,7 +195,7 @@
     owner: root
     group: root
     mode: 0755
-  become: yes
+  become: true
   loop:
     - nautobot
     - nautobot-worker
@@ -207,7 +207,7 @@
     state: started
     enabled: yes
     daemon_reload: yes
-  become: yes
+  become: true
   loop:
     - nautobot
     - nautobot-worker

@@ -5,7 +5,7 @@
     NAUTOBOT_ROOT: "{{ nautobot_root }}"
   args:
     executable: /bin/bash
-  become: yes
+  become: true
   become_method: sudo
   become_flags: --login
   become_user: "{{ nautobot_system_user }}"
@@ -19,7 +19,7 @@
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
-  become: yes
+  become: true
   listen: restart_nautobot
   loop:
     - nautobot
