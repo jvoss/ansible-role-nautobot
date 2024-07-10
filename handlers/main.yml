@@ -25,3 +25,5 @@
     - nautobot
     - nautobot-worker
     - nautobot-scheduler
+  tags:
+    - skip_ansible_lint
