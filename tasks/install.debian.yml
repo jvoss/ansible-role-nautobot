@@ -1,10 +1,10 @@
 ---
-- name: install.debian | update apt repository cache
+- name: install.debian | Update apt repository cache
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
 
-- name: install.debian | install required system packages
+- name: install.debian | Install required system packages
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present
@@ -15,7 +15,7 @@
     - python3-venv
     - python3-dev
 
-- name: install.debian | install system packages for LDAP authentication
+- name: install.debian | Install system packages for LDAP authentication
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present

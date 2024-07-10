@@ -53,7 +53,7 @@ At the completion of this play Nautobot will be available at: `http://<host_ip>:
 
     - hosts: nautobot.example.com
       gather_facts: yes
-      become: yes
+      become: true
 
       roles:
         - role: geerlingguy.postgresql

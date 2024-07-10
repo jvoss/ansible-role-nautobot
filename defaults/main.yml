@@ -162,8 +162,8 @@ nautobot_hide_restricted_ui: False
 # HTTP proxies Nautobot should use when sending outbound HTTP requests
 # (e.g. for webhooks).
 nautobot_http_proxies: {
-  #http: "http://10.10.1.10:3128",
-  #https: "http://10.10.1.10:3128"
+#  http: "http://10.10.1.10:3128",
+#  https: "http://10.10.1.10:3128"
 }
 
 # IP addresses recognized as internal to the system. The debugging toolbar will be
