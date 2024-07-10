@@ -1,6 +1,6 @@
 ---
 - name: install.redhat | install required system packages
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ item }}"
     state: present
   loop:
@@ -11,7 +11,7 @@
     - python3-dnf
 
 - name: install.redhat | install system packages for LDAP authentication
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ item }}"
     state: present
   loop:
