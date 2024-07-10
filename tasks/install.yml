@@ -96,7 +96,7 @@
   become_user: "{{ nautobot_system_user }}"
 
 - name: install | include Nautobot configuration tasks
-  include: configure.yml
+  include_tasks: configure.yml
 
 # This step is used to determine whether the run is the first installation of
 # Nautobot to determine whether initial users should be created (if defined)
