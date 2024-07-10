@@ -1,5 +1,5 @@
 ---
-- name: handlers | check Nautobot configuration
+- name: handlers | Check Nautobot configuration
   ansible.builtin.shell: nautobot-server check
   environment:
     NAUTOBOT_ROOT: "{{ nautobot_root }}"
@@ -15,7 +15,7 @@
   tags:
     - skip_ansible_lint # login shell is required to exec as nautobot user with profile
 
-- name: handler | restart Nautobot services
+- name: handler | Restart Nautobot services
   ansible.builtin.service:
     name: "{{ item }}"
     state: restarted
