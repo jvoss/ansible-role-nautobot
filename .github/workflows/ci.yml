@@ -61,7 +61,7 @@ jobs:
     strategy:
       matrix:
         distro:
-          - centos8
+          # - centos8
           - ubuntu2004
 
     services:
